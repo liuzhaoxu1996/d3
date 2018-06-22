@@ -1,0 +1,116 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>集群图</title>
+  <style>
+    .node circle {
+      fill: #fff;
+      stroke: steelblue;
+      stroke-width: 1.5px;
+    }
+
+    .node {
+      font: 12px sans-serif;
+    }
+
+    .link {
+      fill: none;
+      stroke: #ccc;
+      stroke-width: 1.5px;
+    }
+  </style>
+</head>
+
+<body>
+  <script src="https://d3js.org/d3.v3.js"></script>
+  <script>
+    var data = {
+      "name": "flare",
+      "children": [{
+        "name": "analytics",
+        "children": [{
+            "name": "cluster",
+            "children": [{
+                "name": "AgglomerativeCluster",
+              },
+              {
+                "name": "CommunityStructure",
+              },
+              {
+                "name": "MergeEdge",
+              }
+            ]
+          },
+          {
+            "name": "graph",
+            "children": [{
+                "name": "BetweennessCentrality",
+              },
+              {
+                "name": "LinkDistance",
+              }
+            ]
+          }
+        ]
+      }]
+    };
+
+    var radius = window.innerHeight;
+    var chart = d3.select('body').append('svg')
+      .attr({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      })
+      .append('g').attr({
+        transform: 'translate(' + [70, 320] + ')rotate(60)',
+      });
+
+    var tree = d3.layout.tree().size([60, radius / 1.5]);
+
+    var nodes = tree.nodes(data);
+    var links = tree.links(nodes);
+
+    var diagonal = d3.svg.diagonal.radial()
+      .projection(function (d) {
+        return [d.y, d.x / 180 * Math.PI];
+      });
+
+    chart.selectAll('path.link').data(links)
+      .enter()
+      .append('path')
+      .attr({
+        d: diagonal,
+        fill: 'none',
+        stroke: '#ccc',
+        'stroke-width': 1
+      });
+    var nodeContainer = chart.selectAll('g.node').data(nodes)
+      .enter()
+      .append('g')
+      .attr({
+        'class': 'node',
+        transform: function (d) {
+          return 'rotate(' + (d.x - 90) + ')translate(' + (d.y) + ')';
+        }
+      });
+    nodeContainer.append('circle')
+      .attr({
+        fill: '#fff',
+        stroke: '#78B446',
+        'stroke-width': 4,
+        r: 4
+      });
+    nodeContainer.append('text')
+      .attr({
+        dx: -10,
+        dy: -10
+      })
+      .text(function (d) {
+        return d.name;
+      })
+  </script>
+
+</body>
+
+</html>
